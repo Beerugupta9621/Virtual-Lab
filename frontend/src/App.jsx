@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 import PhysicsCanvas from "./components/PhysicsCanvas";
 
+import ControlPanel from "./components/ControlPanel";
+
 import "./App.css";
 
 function App() {
@@ -9,18 +11,28 @@ function App() {
     const [running, setRunning] =
         useState(false);
 
+    const [gravity, setGravity] =
+        useState(9.8);
+
+    const [speed, setSpeed] =
+        useState(1);
+
     const [reset, setReset] =
         useState(false);
 
-    const startSimulation = () => {
+    const [objectCount, setObjectCount] =
+        useState(1);
 
+
+    const startSimulation = () => {
         setRunning(true);
     };
 
-    const pauseSimulation = () => {
 
+    const pauseSimulation = () => {
         setRunning(false);
     };
+
 
     const resetSimulation = () => {
 
@@ -29,46 +41,73 @@ function App() {
         setReset(
             previous => !previous
         );
+
+        setObjectCount(1);
     };
 
-    return (
 
+    return (
         <div className="app">
 
-            <h1>
-                Virtual Lab
-            </h1>
+            <header className="header">
 
-            <p className="subtitle">
-                Interactive 2D Physics Simulation
-            </p>
+                <div>
+                    <h1>
+                        Virtual Lab
+                    </h1>
 
-            <div className="controls">
+                    <p>
+                        Interactive 2D Physics
+                        Simulation Platform
+                    </p>
+                </div>
 
-                <button
-                    onClick={startSimulation}
-                >
-                    ▶ Start
-                </button>
+                <div className="status">
 
-                <button
-                    onClick={pauseSimulation}
-                >
-                    ⏸ Pause
-                </button>
+                    <span
+                        className={
+                            running
+                                ? "status-dot active"
+                                : "status-dot"
+                        }
+                    />
 
-                <button
-                    onClick={resetSimulation}
-                >
-                    ↻ Reset
-                </button>
+                    {running
+                        ? "Simulation Running"
+                        : "Simulation Paused"
+                    }
 
-            </div>
+                </div>
 
-            <PhysicsCanvas
-                running={running}
-                reset={reset}
-            />
+            </header>
+
+
+            <main className="main-content">
+
+                <ControlPanel
+                    running={running}
+                    gravity={gravity}
+                    speed={speed}
+                    objectCount={objectCount}
+                    onStart={startSimulation}
+                    onPause={pauseSimulation}
+                    onReset={resetSimulation}
+                    onGravityChange={setGravity}
+                    onSpeedChange={setSpeed}
+                />
+
+
+                <PhysicsCanvas
+                    running={running}
+                    gravity={gravity}
+                    speed={speed}
+                    reset={reset}
+                    onObjectCountChange={
+                        setObjectCount
+                    }
+                />
+
+            </main>
 
         </div>
     );
