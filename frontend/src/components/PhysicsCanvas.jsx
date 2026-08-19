@@ -11,7 +11,8 @@ function PhysicsCanvas({
     gravity,
     speed,
     reset,
-    onObjectCountChange
+    onObjectCountChange,
+    onCollisionCountChange
 }) {
     const canvasRef = useRef(null);
 
@@ -51,6 +52,8 @@ function PhysicsCanvas({
             engine.getObjectCount()
         );
 
+        onCollisionCountChange(0);
+
         let previousTime =
             performance.now();
 
@@ -66,6 +69,7 @@ function PhysicsCanvas({
 
             // Update physics
             if (running) {
+
                 engine.gravity = gravity;
 
                 engine.update(
@@ -73,6 +77,11 @@ function PhysicsCanvas({
                     speed
                 );
             }
+
+            // Send collision count to App
+            onCollisionCountChange(
+                engine.getCollisionCount()
+            );
 
             // Clear canvas
             ctx.clearRect(
@@ -130,12 +139,19 @@ function PhysicsCanvas({
             );
 
         return () => {
+
             cancelAnimationFrame(
                 animationRef.current
             );
         };
 
-    }, [running, gravity, speed]);
+    }, [
+        running,
+        gravity,
+        speed,
+        onObjectCountChange,
+        onCollisionCountChange
+    ]);
 
 
     // Reset simulation
@@ -145,6 +161,7 @@ function PhysicsCanvas({
             reset &&
             engineRef.current
         ) {
+
             engineRef.current.reset();
 
             const ball =
@@ -161,9 +178,15 @@ function PhysicsCanvas({
             onObjectCountChange(
                 engineRef.current.getObjectCount()
             );
+
+            onCollisionCountChange(0);
         }
 
-    }, [reset]);
+    }, [
+        reset,
+        onObjectCountChange,
+        onCollisionCountChange
+    ]);
 
 
     // Mouse click
@@ -189,28 +212,29 @@ function PhysicsCanvas({
             (event.clientY - rect.top) *
             scaleY;
 
-        const radius = 20 + Math.random() * 15;
+        const radius =
+            20 + Math.random() * 15;
 
         const mass =
-    0.5 + Math.random() * 2;
+            0.5 + Math.random() * 2;
 
-const restitution =
-    0.5 + Math.random() * 0.4;
+        const restitution =
+            0.5 + Math.random() * 0.4;
 
-const friction =
-    0.1 + Math.random() * 0.5;
+        const friction =
+            0.1 + Math.random() * 0.5;
 
-const object =
-    new PhysicsObject(
-        x,
-        y,
-        radius,
-        mass,
-        restitution,
-        friction
-    );
+        const object =
+            new PhysicsObject(
+                x,
+                y,
+                radius,
+                mass,
+                restitution,
+                friction
+            );
 
-        // Give new balls random horizontal velocity
+        // Random horizontal velocity
         object.velocity.x =
             (Math.random() - 0.5) * 200;
 
@@ -323,6 +347,7 @@ function drawGrid(
         x <= width;
         x += gridSize
     ) {
+
         ctx.beginPath();
 
         ctx.moveTo(x, 0);
@@ -337,6 +362,7 @@ function drawGrid(
         y <= height;
         y += gridSize
     ) {
+
         ctx.beginPath();
 
         ctx.moveTo(0, y);

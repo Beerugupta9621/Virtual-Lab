@@ -48,11 +48,9 @@ class PhysicsEngine {
                 j < this.objects.length;
                 j++
             ) {
-                const objectA =
-                    this.objects[i];
+                const objectA = this.objects[i];
 
-                const objectB =
-                    this.objects[j];
+                const objectB = this.objects[j];
 
                 const collision =
                     checkCircleCollision(
@@ -74,8 +72,7 @@ class PhysicsEngine {
     }
 
     checkFloorCollision(object) {
-        const floor =
-            this.height - 10;
+        const floor = this.height - 10;
 
         if (
             object.position.y +

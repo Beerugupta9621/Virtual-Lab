@@ -4,6 +4,8 @@ import PhysicsCanvas from "./components/PhysicsCanvas";
 
 import ControlPanel from "./components/ControlPanel";
 
+import SimulationStats from "./components/SimulationStats";
+
 import "./App.css";
 
 function App() {
@@ -22,6 +24,9 @@ function App() {
 
     const [objectCount, setObjectCount] =
         useState(1);
+
+    const [collisionCount, setCollisionCount] =
+        useState(0);
 
 
     const startSimulation = () => {
@@ -43,15 +48,20 @@ function App() {
         );
 
         setObjectCount(1);
+
+        setCollisionCount(0);
     };
 
 
     return (
         <div className="app">
 
+            {/* Header */}
+
             <header className="header">
 
                 <div>
+
                     <h1>
                         Virtual Lab
                     </h1>
@@ -60,6 +70,7 @@ function App() {
                         Interactive 2D Physics
                         Simulation Platform
                     </p>
+
                 </div>
 
                 <div className="status">
@@ -82,7 +93,11 @@ function App() {
             </header>
 
 
+            {/* Main */}
+
             <main className="main-content">
+
+                {/* Controls */}
 
                 <ControlPanel
                     running={running}
@@ -97,6 +112,18 @@ function App() {
                 />
 
 
+                {/* Statistics */}
+
+                <SimulationStats
+                    objectCount={objectCount}
+                    collisionCount={collisionCount}
+                    gravity={gravity}
+                    speed={speed}
+                />
+
+
+                {/* Physics Canvas */}
+
                 <PhysicsCanvas
                     running={running}
                     gravity={gravity}
@@ -104,6 +131,9 @@ function App() {
                     reset={reset}
                     onObjectCountChange={
                         setObjectCount
+                    }
+                    onCollisionCountChange={
+                        setCollisionCount
                     }
                 />
 
