@@ -1,7 +1,14 @@
 import Vector2 from "./Vector2";
 
 class PhysicsObject {
-    constructor(x, y, radius = 20) {
+    constructor(
+        x,
+        y,
+        radius = 20,
+        mass = 1,
+        restitution = 0.75,
+        friction = 0.2
+    ) {
         this.position =
             new Vector2(x, y);
 
@@ -10,11 +17,14 @@ class PhysicsObject {
 
         this.radius = radius;
 
-        this.mass = 1;
+        // Physical properties
+        this.mass = mass;
 
-        this.restitution = 0.75;
+        this.restitution =
+            restitution;
 
-        this.friction = 0.2;
+        this.friction =
+            friction;
     }
 
     applyGravity(gravity) {

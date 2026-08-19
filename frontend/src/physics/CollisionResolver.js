@@ -1,89 +1,174 @@
 import Vector2 from "./Vector2";
 
-function resolveCollision(objectA, objectB, collision) {
-    const normal = collision.normal;
+function resolveCollision(
+    objectA,
+    objectB,
+    collision
+) {
+    const normal =
+        collision.normal;
 
     // Relative velocity
-    const relativeVelocity = new Vector2(
-        objectB.velocity.x - objectA.velocity.x,
-        objectB.velocity.y - objectA.velocity.y
-    );
+    const relativeVelocity =
+        new Vector2(
+            objectB.velocity.x -
+                objectA.velocity.x,
+
+            objectB.velocity.y -
+                objectA.velocity.y
+        );
 
     // Velocity along collision normal
     const velocityAlongNormal =
-        relativeVelocity.x * normal.x +
-        relativeVelocity.y * normal.y;
+        relativeVelocity.x *
+            normal.x +
+        relativeVelocity.y *
+            normal.y;
 
-    // Objects are already moving apart
+    // Objects are moving apart
     if (velocityAlongNormal > 0) {
         return;
     }
 
-    // Coefficient of restitution
-    const restitution = Math.min(
-        objectA.restitution,
-        objectB.restitution
-    );
+    // Use the less-bouncy material
+    const restitution =
+        Math.min(
+            objectA.restitution,
+            objectB.restitution
+        );
 
     // Calculate impulse
+    const inverseMassA =
+        1 / objectA.mass;
+
+    const inverseMassB =
+        1 / objectB.mass;
+
     const impulseMagnitude =
         -(1 + restitution) *
         velocityAlongNormal /
-        (
-            (1 / objectA.mass) +
-            (1 / objectB.mass)
+        (inverseMassA +
+            inverseMassB);
+
+    const impulse =
+        new Vector2(
+            impulseMagnitude *
+                normal.x,
+
+            impulseMagnitude *
+                normal.y
         );
 
-    const impulse = new Vector2(
-        impulseMagnitude * normal.x,
-        impulseMagnitude * normal.y
-    );
-
-    // Apply impulse to object A
+    // Apply normal impulse
     objectA.velocity.x -=
-        impulse.x / objectA.mass;
+        impulse.x * inverseMassA;
 
     objectA.velocity.y -=
-        impulse.y / objectA.mass;
+        impulse.y * inverseMassA;
 
-    // Apply impulse to object B
     objectB.velocity.x +=
-        impulse.x / objectB.mass;
+        impulse.x * inverseMassB;
 
     objectB.velocity.y +=
-        impulse.y / objectB.mass;
+        impulse.y * inverseMassB;
 
-    // Push objects apart slightly
-    // to prevent them from getting stuck
-    const correctionPercent = 0.8;
+    // -----------------------------
+    // Friction
+    // -----------------------------
+
+    const tangent = new Vector2(
+        -normal.y,
+        normal.x
+    );
+
+    const tangentVelocity =
+        relativeVelocity.x *
+            tangent.x +
+        relativeVelocity.y *
+            tangent.y;
+
+    const friction =
+        Math.sqrt(
+            objectA.friction *
+                objectB.friction
+        );
+
+    let frictionImpulse =
+        -tangentVelocity /
+        (inverseMassA +
+            inverseMassB);
+
+    const maxFriction =
+        Math.abs(
+            impulseMagnitude
+        ) * friction;
+
+    frictionImpulse =
+        Math.max(
+            -maxFriction,
+            Math.min(
+                frictionImpulse,
+                maxFriction
+            )
+        );
+
+    const frictionVector =
+        new Vector2(
+            frictionImpulse *
+                tangent.x,
+
+            frictionImpulse *
+                tangent.y
+        );
+
+    objectA.velocity.x -=
+        frictionVector.x *
+        inverseMassA;
+
+    objectA.velocity.y -=
+        frictionVector.y *
+        inverseMassA;
+
+    objectB.velocity.x +=
+        frictionVector.x *
+        inverseMassB;
+
+    objectB.velocity.y +=
+        frictionVector.y *
+        inverseMassB;
+
+    // -----------------------------
+    // Positional correction
+    // -----------------------------
+
+    const correctionPercent =
+        0.8;
 
     const correction =
         collision.penetration *
         correctionPercent /
-        (
-            (1 / objectA.mass) +
-            (1 / objectB.mass)
-        );
+        (inverseMassA +
+            inverseMassB);
 
     objectA.position.x -=
         correction *
-        normal.x /
-        objectA.mass;
+        normal.x *
+        inverseMassA;
 
     objectA.position.y -=
         correction *
-        normal.y /
-        objectA.mass;
+        normal.y *
+        inverseMassA;
 
     objectB.position.x +=
         correction *
-        normal.x /
-        objectB.mass;
+        normal.x *
+        inverseMassB;
 
     objectB.position.y +=
         correction *
-        normal.y /
-        objectB.mass;
+        normal.y *
+        inverseMassB;
 }
 
 export default resolveCollision;

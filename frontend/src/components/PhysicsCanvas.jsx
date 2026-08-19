@@ -191,12 +191,24 @@ function PhysicsCanvas({
 
         const radius = 20 + Math.random() * 15;
 
-        const object =
-            new PhysicsObject(
-                x,
-                y,
-                radius
-            );
+        const mass =
+    0.5 + Math.random() * 2;
+
+const restitution =
+    0.5 + Math.random() * 0.4;
+
+const friction =
+    0.1 + Math.random() * 0.5;
+
+const object =
+    new PhysicsObject(
+        x,
+        y,
+        radius,
+        mass,
+        restitution,
+        friction
+    );
 
         // Give new balls random horizontal velocity
         object.velocity.x =
