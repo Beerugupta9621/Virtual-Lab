@@ -1,5 +1,7 @@
 import Vector2 from "./Vector2";
 
+let nextObjectId = 1;
+
 class PhysicsObject {
     constructor(
         x,
@@ -9,6 +11,10 @@ class PhysicsObject {
         restitution = 0.75,
         friction = 0.2
     ) {
+
+        // Unique object ID
+        this.id = `Ball ${nextObjectId++}`;
+
         this.position =
             new Vector2(x, y);
 
@@ -28,11 +34,13 @@ class PhysicsObject {
     }
 
     applyGravity(gravity) {
+
         this.velocity.y +=
             gravity * 100;
     }
 
     update(deltaTime) {
+
         this.position.x +=
             this.velocity.x *
             deltaTime;

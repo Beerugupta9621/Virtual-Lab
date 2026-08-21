@@ -4,6 +4,7 @@ import PhysicsCanvas from "./components/PhysicsCanvas";
 import ControlPanel from "./components/ControlPanel";
 import SimulationStats from "./components/SimulationStats";
 import PerformanceMonitor from "./components/PerformanceMonitor";
+import ObjectInspector from "./components/ObjectInspector";
 
 import "./App.css";
 
@@ -33,15 +34,20 @@ function App() {
     const [frameTime, setFrameTime] =
         useState(0);
 
+    const [selectedObject, setSelectedObject] =
+        useState(null);
+
 
     // Start simulation
     const startSimulation = () => {
+
         setRunning(true);
     };
 
 
     // Pause simulation
     const pauseSimulation = () => {
+
         setRunning(false);
     };
 
@@ -62,6 +68,8 @@ function App() {
         setFps(0);
 
         setFrameTime(0);
+
+        setSelectedObject(null);
     };
 
 
@@ -97,6 +105,7 @@ function App() {
 
                 </div>
 
+
                 <div className="status">
 
                     <span
@@ -128,11 +137,26 @@ function App() {
                     gravity={gravity}
                     speed={speed}
                     objectCount={objectCount}
-                    onStart={startSimulation}
-                    onPause={pauseSimulation}
-                    onReset={resetSimulation}
-                    onGravityChange={setGravity}
-                    onSpeedChange={setSpeed}
+
+                    onStart={
+                        startSimulation
+                    }
+
+                    onPause={
+                        pauseSimulation
+                    }
+
+                    onReset={
+                        resetSimulation
+                    }
+
+                    onGravityChange={
+                        setGravity
+                    }
+
+                    onSpeedChange={
+                        setSpeed
+                    }
                 />
 
 
@@ -155,6 +179,15 @@ function App() {
                 />
 
 
+                {/* Object Inspector */}
+
+                <ObjectInspector
+                    selectedObject={
+                        selectedObject
+                    }
+                />
+
+
                 {/* Physics Canvas */}
 
                 <PhysicsCanvas
@@ -173,6 +206,10 @@ function App() {
 
                     onPerformanceUpdate={
                         updatePerformance
+                    }
+
+                    onObjectSelect={
+                        setSelectedObject
                     }
                 />
 

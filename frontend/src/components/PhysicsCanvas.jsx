@@ -13,7 +13,8 @@ function PhysicsCanvas({
     reset,
     onObjectCountChange,
     onCollisionCountChange,
-    onPerformanceUpdate
+    onPerformanceUpdate,
+     onObjectSelect
 }) {
     const canvasRef = useRef(null);
 
@@ -332,97 +333,135 @@ function PhysicsCanvas({
     // Create ball when canvas is clicked
     const handleCanvasClick = (event) => {
 
-        const canvas =
-            canvasRef.current;
+    const canvas =
+        canvasRef.current;
 
-        const engine =
-            engineRef.current;
+    const engine =
+        engineRef.current;
 
-
-        if (
-            !canvas ||
-            !engine
-        ) {
-            return;
-        }
+    if (!canvas || !engine) {
+        return;
+    }
 
 
-        const rect =
-            canvas.getBoundingClientRect();
+    const rect =
+        canvas.getBoundingClientRect();
 
 
-        // Convert browser coordinates
-        // to canvas coordinates
-        const scaleX =
-            canvas.width /
-            rect.width;
+    const scaleX =
+        canvas.width / rect.width;
 
-        const scaleY =
-            canvas.height /
-            rect.height;
+    const scaleY =
+        canvas.height / rect.height;
 
 
-        const x =
-            (event.clientX - rect.left) *
-            scaleX;
+    const x =
+        (event.clientX - rect.left) *
+        scaleX;
 
-        const y =
-            (event.clientY - rect.top) *
-            scaleY;
-
-
-        // Random properties
-        const radius =
-            20 + Math.random() * 15;
-
-        const mass =
-            0.5 + Math.random() * 2;
-
-        const restitution =
-            0.5 + Math.random() * 0.4;
-
-        const friction =
-            0.1 + Math.random() * 0.5;
+    const y =
+        (event.clientY - rect.top) *
+        scaleY;
 
 
-        // Create object
+    // Check if an existing ball was clicked
+
+    for (
+        let i = engine.objects.length - 1;
+        i >= 0;
+        i--
+    ) {
+
         const object =
-            new PhysicsObject(
-                x,
-                y,
-                radius,
-                mass,
-                restitution,
-                friction
+            engine.objects[i];
+
+
+        const dx =
+            x - object.position.x;
+
+        const dy =
+            y - object.position.y;
+
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
             );
 
 
-        // Random horizontal velocity
-        object.velocity.x =
-            (Math.random() - 0.5) * 200;
+        if (
+            distance <=
+            object.radius
+        ) {
+
+            console.log(
+                "Selected:",
+                object.id
+            );
 
 
-        // Upward velocity
-        object.velocity.y =
-            -50;
+            if (onObjectSelect) {
+
+                onObjectSelect(
+                    object
+                );
+            }
+
+            return;
+        }
+    }
 
 
-        // Add to engine
-        engine.addObject(object);
+    // No existing ball clicked
+    // Create a new ball
+
+    const radius =
+        20 + Math.random() * 15;
+
+    const mass =
+        0.5 + Math.random() * 2;
+
+    const restitution =
+        0.5 + Math.random() * 0.4;
+
+    const friction =
+        0.1 + Math.random() * 0.5;
 
 
-        // Update counter
-        objectCountCallbackRef.current(
-            engine.getObjectCount()
+    const object =
+        new PhysicsObject(
+            x,
+            y,
+            radius,
+            mass,
+            restitution,
+            friction
         );
 
 
-        console.log(
-            "Ball created. Total objects:",
-            engine.getObjectCount()
-        );
-    };
+    object.velocity.x =
+        (Math.random() - 0.5) * 200;
 
+    object.velocity.y =
+        -50;
+
+
+    engine.addObject(
+        object
+    );
+
+
+    onObjectCountChange(
+        engine.getObjectCount()
+    );
+
+
+    console.log(
+        "Created:",
+        object.id
+    );
+};
 
     return (
         <div className="canvas-container">
