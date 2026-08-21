@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
 import PhysicsCanvas from "./components/PhysicsCanvas";
-
 import ControlPanel from "./components/ControlPanel";
-
 import SimulationStats from "./components/SimulationStats";
+import PerformanceMonitor from "./components/PerformanceMonitor";
 
 import "./App.css";
 
@@ -28,17 +27,26 @@ function App() {
     const [collisionCount, setCollisionCount] =
         useState(0);
 
+    const [fps, setFps] =
+        useState(0);
 
+    const [frameTime, setFrameTime] =
+        useState(0);
+
+
+    // Start simulation
     const startSimulation = () => {
         setRunning(true);
     };
 
 
+    // Pause simulation
     const pauseSimulation = () => {
         setRunning(false);
     };
 
 
+    // Reset simulation
     const resetSimulation = () => {
 
         setRunning(false);
@@ -50,6 +58,22 @@ function App() {
         setObjectCount(1);
 
         setCollisionCount(0);
+
+        setFps(0);
+
+        setFrameTime(0);
+    };
+
+
+    // Receive performance data
+    const updatePerformance = ({
+        fps,
+        frameTime
+    }) => {
+
+        setFps(fps);
+
+        setFrameTime(frameTime);
     };
 
 
@@ -112,13 +136,22 @@ function App() {
                 />
 
 
-                {/* Statistics */}
+                {/* Simulation Statistics */}
 
                 <SimulationStats
                     objectCount={objectCount}
                     collisionCount={collisionCount}
                     gravity={gravity}
                     speed={speed}
+                />
+
+
+                {/* Performance Monitor */}
+
+                <PerformanceMonitor
+                    fps={fps}
+                    frameTime={frameTime}
+                    objectCount={objectCount}
                 />
 
 
@@ -129,11 +162,17 @@ function App() {
                     gravity={gravity}
                     speed={speed}
                     reset={reset}
+
                     onObjectCountChange={
                         setObjectCount
                     }
+
                     onCollisionCountChange={
                         setCollisionCount
+                    }
+
+                    onPerformanceUpdate={
+                        updatePerformance
                     }
                 />
 
