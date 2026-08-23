@@ -14,8 +14,7 @@ function ObjectInspector({
                 </h3>
 
                 <p className="inspector-empty">
-                    Click a ball to inspect
-                    its properties.
+                    Click a ball to inspect its properties.
                 </p>
 
             </div>
@@ -37,45 +36,59 @@ function ObjectInspector({
                     Physical Properties
                 </h4>
 
-                <div className="property">
+
+                <div className="inspector-row">
+
                     <span>ID</span>
+
                     <strong>
-                        {selectedObject.id}
+                        Ball
                     </strong>
+
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
+
                     <span>Mass</span>
+
                     <strong>
                         {selectedObject.mass.toFixed(2)}
-                        {" "}kg
                     </strong>
+
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
+
                     <span>Radius</span>
+
                     <strong>
-                        {selectedObject.radius.toFixed(2)}
-                        {" "}px
+                        {selectedObject.radius.toFixed(2)} px
                     </strong>
+
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
+
                     <span>Restitution</span>
+
                     <strong>
                         {selectedObject.restitution.toFixed(2)}
                     </strong>
+
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
+
                     <span>Friction</span>
+
                     <strong>
                         {selectedObject.friction.toFixed(2)}
                     </strong>
+
                 </div>
 
             </div>
@@ -87,7 +100,8 @@ function ObjectInspector({
                     Position
                 </h4>
 
-                <div className="property">
+
+                <div className="inspector-row">
 
                     <span>X</span>
 
@@ -98,7 +112,7 @@ function ObjectInspector({
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
 
                     <span>Y</span>
 
@@ -117,7 +131,8 @@ function ObjectInspector({
                     Velocity
                 </h4>
 
-                <div className="property">
+
+                <div className="inspector-row">
 
                     <span>X</span>
 
@@ -128,7 +143,7 @@ function ObjectInspector({
                 </div>
 
 
-                <div className="property">
+                <div className="inspector-row">
 
                     <span>Y</span>
 

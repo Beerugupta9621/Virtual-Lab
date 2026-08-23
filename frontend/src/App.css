@@ -260,3 +260,87 @@ canvas {
         text-align: center;
     }
 }
+
+.object-inspector {
+    width: 900px;
+    margin: 15px auto;
+    padding: 16px;
+
+    background: #111827;
+
+    border: 1px solid #374151;
+
+    border-radius: 8px;
+
+    color: white;
+}
+
+.object-inspector h3 {
+    margin: 0 0 12px 0;
+
+    font-size: 16px;
+}
+
+.inspector-empty {
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+.inspector-section {
+    margin-top: 14px;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #374151;
+}
+
+.inspector-section h4 {
+    margin: 0 0 8px 0;
+
+    color: #86efac;
+
+    font-size: 13px;
+}
+
+.inspector-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin: 5px 0;
+
+    font-size: 12px;
+}
+
+.inspector-row span {
+    color: #9ca3af;
+}
+
+.inspector-row strong {
+    color: white;
+}
+
+.canvas-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.add-ball-button {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.add-ball-button:hover {
+    background: #15803d;
+}
+
+.add-ball-button:active {
+    transform: scale(0.97);
+}

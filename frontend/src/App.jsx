@@ -22,6 +22,9 @@ function App() {
     const [reset, setReset] =
         useState(false);
 
+    const [clear, setClear] =
+        useState(false);
+
     const [objectCount, setObjectCount] =
         useState(1);
 
@@ -62,6 +65,25 @@ function App() {
         );
 
         setObjectCount(1);
+
+        setCollisionCount(0);
+
+        setFps(0);
+
+        setFrameTime(0);
+
+        setSelectedObject(null);
+    };
+
+
+    // Clear all objects
+    const clearObjects = () => {
+
+        setClear(
+            previous => !previous
+        );
+
+        setObjectCount(0);
 
         setCollisionCount(0);
 
@@ -150,6 +172,10 @@ function App() {
                         resetSimulation
                     }
 
+                    onClear={
+                        clearObjects
+                    }
+
                     onGravityChange={
                         setGravity
                     }
@@ -195,6 +221,7 @@ function App() {
                     gravity={gravity}
                     speed={speed}
                     reset={reset}
+                    clear={clear}
 
                     onObjectCountChange={
                         setObjectCount

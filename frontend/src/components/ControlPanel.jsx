@@ -8,17 +8,27 @@ function ControlPanel({
     onStart,
     onPause,
     onReset,
+    onClear,
     onGravityChange,
     onSpeedChange
 }) {
+
+    // Physics presets
+    const applyPreset = (value) => {
+        onGravityChange(value);
+    };
+
     return (
         <div className="control-panel">
 
+            {/* Gravity */}
             <div className="control-group">
 
                 <label>
                     Gravity
-                    <span>{gravity.toFixed(1)}</span>
+                    <span>
+                        {gravity.toFixed(1)}
+                    </span>
                 </label>
 
                 <input
@@ -37,11 +47,14 @@ function ControlPanel({
             </div>
 
 
+            {/* Simulation Speed */}
             <div className="control-group">
 
                 <label>
                     Simulation Speed
-                    <span>{speed.toFixed(1)}x</span>
+                    <span>
+                        {speed.toFixed(1)}x
+                    </span>
                 </label>
 
                 <input
@@ -60,6 +73,53 @@ function ControlPanel({
             </div>
 
 
+            {/* Physics Presets */}
+            <div className="preset-section">
+
+                <h3>
+                    Physics Presets
+                </h3>
+
+                <div className="preset-buttons">
+
+                    <button
+                        onClick={() =>
+                            applyPreset(9.8)
+                        }
+                    >
+                        Earth
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            applyPreset(1.62)
+                        }
+                    >
+                        Moon
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            applyPreset(3.71)
+                        }
+                    >
+                        Mars
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            applyPreset(0)
+                        }
+                    >
+                        Zero Gravity
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            {/* Main Buttons */}
             <div className="buttons">
 
                 <button
@@ -70,6 +130,7 @@ function ControlPanel({
                     ▶ Start
                 </button>
 
+
                 <button
                     className="pause-button"
                     onClick={onPause}
@@ -78,6 +139,7 @@ function ControlPanel({
                     ⏸ Pause
                 </button>
 
+
                 <button
                     className="reset-button"
                     onClick={onReset}
@@ -85,13 +147,28 @@ function ControlPanel({
                     ↻ Reset
                 </button>
 
+
+                <button
+                    className="clear-button"
+                    onClick={onClear}
+                >
+                    🗑 Clear
+                </button>
+
             </div>
 
 
+            {/* Object Counter */}
             <div className="object-counter">
 
                 Objects:
-                <strong>{objectCount}</strong>
+                <strong>
+                    {objectCount}
+                </strong>
+
+                <span>
+                    / 50
+                </span>
 
             </div>
 

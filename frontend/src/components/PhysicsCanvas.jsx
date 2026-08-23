@@ -6,6 +6,7 @@ import React, {
 import PhysicsEngine from "../physics/PhysicsEngine";
 import PhysicsObject from "../physics/PhysicsObject";
 
+
 function PhysicsCanvas({
     running,
     gravity,
@@ -14,19 +15,25 @@ function PhysicsCanvas({
     onObjectCountChange,
     onCollisionCountChange,
     onPerformanceUpdate,
-     onObjectSelect
+    onObjectSelect
 }) {
+
     const canvasRef = useRef(null);
 
     const engineRef = useRef(null);
 
     const animationRef = useRef(null);
 
-    // Keep latest values without recreating the engine
+
+    // Keep latest values without recreating physics engine
     const runningRef = useRef(running);
+
     const gravityRef = useRef(gravity);
+
     const speedRef = useRef(speed);
 
+
+    // Keep latest callback functions
     const objectCountCallbackRef =
         useRef(onObjectCountChange);
 
@@ -36,71 +43,113 @@ function PhysicsCanvas({
     const performanceCallbackRef =
         useRef(onPerformanceUpdate);
 
+    const objectSelectCallbackRef =
+        useRef(onObjectSelect);
 
-    // Update refs whenever props change
+
+    /*
+     * Update refs whenever props change
+     */
+
     useEffect(() => {
+
         runningRef.current = running;
+
     }, [running]);
 
 
     useEffect(() => {
+
         gravityRef.current = gravity;
+
     }, [gravity]);
 
 
     useEffect(() => {
+
         speedRef.current = speed;
+
     }, [speed]);
 
 
     useEffect(() => {
+
         objectCountCallbackRef.current =
             onObjectCountChange;
+
     }, [onObjectCountChange]);
 
 
     useEffect(() => {
+
         collisionCallbackRef.current =
             onCollisionCountChange;
+
     }, [onCollisionCountChange]);
 
 
     useEffect(() => {
+
         performanceCallbackRef.current =
             onPerformanceUpdate;
+
     }, [onPerformanceUpdate]);
 
 
-    // Create physics engine ONCE
     useEffect(() => {
 
-        const canvas = canvasRef.current;
+        objectSelectCallbackRef.current =
+            onObjectSelect;
+
+    }, [onObjectSelect]);
+
+
+    /*
+     * Initialize physics engine ONLY ONCE
+     */
+
+    useEffect(() => {
+
+        const canvas =
+            canvasRef.current;
 
         if (!canvas) {
             return;
         }
 
+
         const ctx =
             canvas.getContext("2d");
 
+
         canvas.width = 900;
+
         canvas.height = 500;
 
 
-        // Create engine
+        /*
+         * Create physics engine
+         */
+
         const engine =
             new PhysicsEngine(
                 canvas.width,
                 canvas.height
             );
 
+
         engine.gravity =
             gravityRef.current;
 
-        engineRef.current = engine;
+
+        engineRef.current =
+            engine;
 
 
-        // Initial ball
+        /*
+         * Create first ball
+         */
+
         const ball =
             new PhysicsObject(
                 450,
@@ -108,17 +157,40 @@ function PhysicsCanvas({
                 30
             );
 
+
         engine.addObject(ball);
 
 
-        objectCountCallbackRef.current(
-            engine.getObjectCount()
-        );
+        /*
+         * Update object count
+         */
 
-        collisionCallbackRef.current(0);
+        if (
+            objectCountCallbackRef.current
+        ) {
+
+            objectCountCallbackRef.current(
+                engine.getObjectCount()
+            );
+        }
 
 
-        // Performance variables
+        /*
+         * Initial collision count
+         */
+
+        if (
+            collisionCallbackRef.current
+        ) {
+
+            collisionCallbackRef.current(0);
+        }
+
+
+        /*
+         * Performance variables
+         */
+
         let previousTime =
             performance.now();
 
@@ -132,25 +204,42 @@ function PhysicsCanvas({
         let frameTime = 0;
 
 
-        // Animation loop
+        /*
+         * Animation loop
+         */
+
         function animate(currentTime) {
 
+            /*
+             * Calculate delta time
+             */
+
             const deltaTime =
-                (currentTime - previousTime) / 1000;
+                (currentTime - previousTime) /
+                1000;
 
             previousTime =
                 currentTime;
 
 
+            /*
+             * Frame time
+             */
+
             frameTime =
                 deltaTime * 1000;
 
 
-            // FPS
+            /*
+             * FPS calculation
+             */
+
             frameCounter++;
 
+
             const elapsed =
-                currentTime - fpsStartTime;
+                currentTime -
+                fpsStartTime;
 
 
             if (elapsed >= 500) {
@@ -158,6 +247,7 @@ function PhysicsCanvas({
                 fps =
                     (frameCounter * 1000) /
                     elapsed;
+
 
                 frameCounter = 0;
 
@@ -171,21 +261,34 @@ function PhysicsCanvas({
 
                     performanceCallbackRef.current({
                         fps: Math.round(fps),
-                        frameTime: frameTime
+                        frameTime: Number(
+                            frameTime.toFixed(2)
+                        )
                     });
                 }
             }
 
 
+            /*
+             * Prevent huge physics jumps
+             */
+
             const dt =
-                Math.min(deltaTime, 0.02);
+                Math.min(
+                    deltaTime,
+                    0.02
+                );
 
 
-            // Update physics only when running
+            /*
+             * Update physics
+             */
+
             if (runningRef.current) {
 
                 engine.gravity =
                     gravityRef.current;
+
 
                 engine.update(
                     dt,
@@ -194,13 +297,24 @@ function PhysicsCanvas({
             }
 
 
-            // Collision count
-            collisionCallbackRef.current(
-                engine.getCollisionCount()
-            );
+            /*
+             * Update collision count
+             */
+
+            if (
+                collisionCallbackRef.current
+            ) {
+
+                collisionCallbackRef.current(
+                    engine.getCollisionCount()
+                );
+            }
 
 
-            // Clear canvas
+            /*
+             * Clear canvas
+             */
+
             ctx.clearRect(
                 0,
                 0,
@@ -209,7 +323,10 @@ function PhysicsCanvas({
             );
 
 
-            // Background
+            /*
+             * Background
+             */
+
             ctx.fillStyle =
                 "#111827";
 
@@ -221,7 +338,10 @@ function PhysicsCanvas({
             );
 
 
-            // Grid
+            /*
+             * Grid
+             */
+
             drawGrid(
                 ctx,
                 canvas.width,
@@ -229,7 +349,10 @@ function PhysicsCanvas({
             );
 
 
-            // Floor
+            /*
+             * Floor
+             */
+
             ctx.fillStyle =
                 "#374151";
 
@@ -241,7 +364,10 @@ function PhysicsCanvas({
             );
 
 
-            // Draw all objects
+            /*
+             * Draw every object
+             */
+
             for (
                 let object of engine.objects
             ) {
@@ -253,6 +379,10 @@ function PhysicsCanvas({
             }
 
 
+            /*
+             * Continue animation
+             */
+
             animationRef.current =
                 requestAnimationFrame(
                     animate
@@ -260,32 +390,46 @@ function PhysicsCanvas({
         }
 
 
+        /*
+         * Start animation
+         */
+
         animationRef.current =
             requestAnimationFrame(
                 animate
             );
 
 
-        // Cleanup
+        /*
+         * Cleanup ONLY when component unmounts
+         */
+
         return () => {
 
-            cancelAnimationFrame(
+            if (
                 animationRef.current
-            );
+            ) {
 
-            engineRef.current = null;
+                cancelAnimationFrame(
+                    animationRef.current
+                );
+            }
+
+
+            engineRef.current =
+                null;
         };
 
     }, []);
 
 
-    // Reset simulation
+    /*
+     * Reset simulation
+     */
+
     useEffect(() => {
 
-        if (
-            !reset ||
-            !engineRef.current
-        ) {
+        if (!reset) {
             return;
         }
 
@@ -294,10 +438,22 @@ function PhysicsCanvas({
             engineRef.current;
 
 
+        if (!engine) {
+            return;
+        }
+
+
+        /*
+         * Remove all objects
+         */
+
         engine.reset();
 
 
-        // Add initial ball again
+        /*
+         * Create fresh initial ball
+         */
+
         const ball =
             new PhysicsObject(
                 450,
@@ -309,13 +465,49 @@ function PhysicsCanvas({
         engine.addObject(ball);
 
 
-        objectCountCallbackRef.current(
-            engine.getObjectCount()
-        );
+        /*
+         * Update object count
+         */
+
+        if (
+            objectCountCallbackRef.current
+        ) {
+
+            objectCountCallbackRef.current(
+                engine.getObjectCount()
+            );
+        }
 
 
-        collisionCallbackRef.current(0);
+        /*
+         * Reset collision count
+         */
 
+        if (
+            collisionCallbackRef.current
+        ) {
+
+            collisionCallbackRef.current(0);
+        }
+
+
+        /*
+         * Remove selected object
+         */
+
+        if (
+            objectSelectCallbackRef.current
+        ) {
+
+            objectSelectCallbackRef.current(
+                null
+            );
+        }
+
+
+        /*
+         * Reset performance
+         */
 
         if (
             performanceCallbackRef.current
@@ -330,151 +522,336 @@ function PhysicsCanvas({
     }, [reset]);
 
 
-    // Create ball when canvas is clicked
-    const handleCanvasClick = (event) => {
+    /*
+     * Create new ball
+     */
 
-    const canvas =
-        canvasRef.current;
+    const createBall = (
+        x,
+        y
+    ) => {
 
-    const engine =
-        engineRef.current;
-
-    if (!canvas || !engine) {
-        return;
-    }
-
-
-    const rect =
-        canvas.getBoundingClientRect();
+        const engine =
+            engineRef.current;
 
 
-    const scaleX =
-        canvas.width / rect.width;
-
-    const scaleY =
-        canvas.height / rect.height;
+        if (!engine) {
+            return;
+        }
 
 
-    const x =
-        (event.clientX - rect.left) *
-        scaleX;
-
-    const y =
-        (event.clientY - rect.top) *
-        scaleY;
-
-
-    // Check if an existing ball was clicked
-
-    for (
-        let i = engine.objects.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const object =
-            engine.objects[i];
-
-
-        const dx =
-            x - object.position.x;
-
-        const dy =
-            y - object.position.y;
-
-
-        const distance =
-            Math.sqrt(
-                dx * dx +
-                dy * dy
-            );
-
+        /*
+         * Maximum objects
+         */
 
         if (
-            distance <=
-            object.radius
+            engine.getObjectCount() >= 50
         ) {
-
-            console.log(
-                "Selected:",
-                object.id
-            );
-
-
-            if (onObjectSelect) {
-
-                onObjectSelect(
-                    object
-                );
-            }
 
             return;
         }
-    }
 
 
-    // No existing ball clicked
-    // Create a new ball
+        /*
+         * Random physical properties
+         */
 
-    const radius =
-        20 + Math.random() * 15;
-
-    const mass =
-        0.5 + Math.random() * 2;
-
-    const restitution =
-        0.5 + Math.random() * 0.4;
-
-    const friction =
-        0.1 + Math.random() * 0.5;
+        const radius =
+            20 +
+            Math.random() * 15;
 
 
-    const object =
-        new PhysicsObject(
-            x,
-            y,
-            radius,
-            mass,
-            restitution,
-            friction
+        const mass =
+            0.5 +
+            Math.random() * 2;
+
+
+        const restitution =
+            0.5 +
+            Math.random() * 0.4;
+
+
+        const friction =
+            0.1 +
+            Math.random() * 0.5;
+
+
+        /*
+         * Create object
+         */
+
+        const object =
+            new PhysicsObject(
+                x,
+                y,
+                radius,
+                mass,
+                restitution,
+                friction
+            );
+
+
+        /*
+         * Random velocity
+         */
+
+        object.velocity.x =
+            (Math.random() - 0.5) *
+            200;
+
+
+        object.velocity.y =
+            -50;
+
+
+        /*
+         * Add to engine
+         */
+
+        engine.addObject(
+            object
         );
 
 
-    object.velocity.x =
-        (Math.random() - 0.5) * 200;
+        /*
+         * Update object count
+         */
 
-    object.velocity.y =
-        -50;
+        if (
+            objectCountCallbackRef.current
+        ) {
 
-
-    engine.addObject(
-        object
-    );
-
-
-    onObjectCountChange(
-        engine.getObjectCount()
-    );
+            objectCountCallbackRef.current(
+                engine.getObjectCount()
+            );
+        }
 
 
-    console.log(
-        "Created:",
-        object.id
-    );
-};
+        /*
+         * Select new ball
+         */
+
+        if (
+            objectSelectCallbackRef.current
+        ) {
+
+            objectSelectCallbackRef.current(
+                object
+            );
+        }
+    };
+
+
+    /*
+     * Canvas click
+     */
+
+    const handleCanvasClick = (
+        event
+    ) => {
+
+        const canvas =
+            canvasRef.current;
+
+
+        const engine =
+            engineRef.current;
+
+
+        if (
+            !canvas ||
+            !engine
+        ) {
+
+            return;
+        }
+
+
+        /*
+         * Get canvas position
+         */
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        /*
+         * Convert browser coordinates
+         * to canvas coordinates
+         */
+
+        const scaleX =
+            canvas.width /
+            rect.width;
+
+
+        const scaleY =
+            canvas.height /
+            rect.height;
+
+
+        const x =
+            (
+                event.clientX -
+                rect.left
+            ) *
+            scaleX;
+
+
+        const y =
+            (
+                event.clientY -
+                rect.top
+            ) *
+            scaleY;
+
+
+        /*
+         * Check whether existing
+         * ball was clicked
+         */
+
+        for (
+            let i =
+                engine.objects.length - 1;
+
+            i >= 0;
+
+            i--
+        ) {
+
+            const object =
+                engine.objects[i];
+
+
+            const dx =
+                x -
+                object.position.x;
+
+
+            const dy =
+                y -
+                object.position.y;
+
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+
+            /*
+             * Existing ball selected
+             */
+
+            if (
+                distance <=
+                object.radius
+            ) {
+
+                if (
+                    objectSelectCallbackRef.current
+                ) {
+
+                    objectSelectCallbackRef.current(
+                        object
+                    );
+                }
+
+
+                return;
+            }
+        }
+
+
+        /*
+         * Empty area clicked
+         * Create new ball
+         */
+
+        createBall(
+            x,
+            y
+        );
+    };
+
+
+    /*
+     * Add random ball button
+     */
+
+    const handleAddBall = () => {
+
+        const canvas =
+            canvasRef.current;
+
+
+        if (!canvas) {
+            return;
+        }
+
+
+        /*
+         * Random position
+         */
+
+        const x =
+            50 +
+            Math.random() *
+            (canvas.width - 100);
+
+
+        const y =
+            50 +
+            Math.random() *
+            150;
+
+
+        createBall(
+            x,
+            y
+        );
+    };
+
+
+    /*
+     * Render
+     */
 
     return (
         <div className="canvas-container">
 
             <p className="canvas-hint">
-                Click anywhere inside the simulation
-                to create a new ball
+
+                Click a ball to inspect it.
+                Click empty space to create
+                a new ball.
+
             </p>
+
+
+            <div className="canvas-actions">
+
+                <button
+                    type="button"
+                    className="add-ball-button"
+                    onClick={handleAddBall}
+                >
+                    + Add Ball
+                </button>
+
+            </div>
 
 
             <canvas
                 ref={canvasRef}
                 onClick={handleCanvasClick}
+                style={{
+                    display: "block",
+                    cursor: "crosshair",
+                    pointerEvents: "auto"
+                }}
             />
 
         </div>
@@ -482,7 +859,10 @@ function PhysicsCanvas({
 }
 
 
-// Draw ball
+/*
+ * Draw ball
+ */
+
 function drawBall(
     ctx,
     object
@@ -499,6 +879,10 @@ function drawBall(
         Math.PI * 2
     );
 
+
+    /*
+     * Ball gradient
+     */
 
     const gradient =
         ctx.createRadialGradient(
@@ -526,12 +910,17 @@ function drawBall(
     ctx.fillStyle =
         gradient;
 
+
     ctx.fill();
+
 
     ctx.closePath();
 
 
-    // Border
+    /*
+     * Ball border
+     */
+
     ctx.beginPath();
 
 
@@ -547,15 +936,22 @@ function drawBall(
     ctx.strokeStyle =
         "#bbf7d0";
 
-    ctx.lineWidth = 2;
+
+    ctx.lineWidth =
+        2;
+
 
     ctx.stroke();
+
 
     ctx.closePath();
 }
 
 
-// Draw grid
+/*
+ * Draw grid
+ */
+
 function drawGrid(
     ctx,
     width,
@@ -565,12 +961,19 @@ function drawGrid(
     ctx.strokeStyle =
         "rgba(255,255,255,0.05)";
 
-    ctx.lineWidth = 1;
 
-    const gridSize = 50;
+    ctx.lineWidth =
+        1;
 
 
-    // Vertical lines
+    const gridSize =
+        50;
+
+
+    /*
+     * Vertical lines
+     */
+
     for (
         let x = 0;
         x <= width;
@@ -579,15 +982,24 @@ function drawGrid(
 
         ctx.beginPath();
 
-        ctx.moveTo(x, 0);
+        ctx.moveTo(
+            x,
+            0
+        );
 
-        ctx.lineTo(x, height);
+        ctx.lineTo(
+            x,
+            height
+        );
 
         ctx.stroke();
     }
 
 
-    // Horizontal lines
+    /*
+     * Horizontal lines
+     */
+
     for (
         let y = 0;
         y <= height;
@@ -596,9 +1008,15 @@ function drawGrid(
 
         ctx.beginPath();
 
-        ctx.moveTo(0, y);
+        ctx.moveTo(
+            0,
+            y
+        );
 
-        ctx.lineTo(width, y);
+        ctx.lineTo(
+            width,
+            y
+        );
 
         ctx.stroke();
     }
