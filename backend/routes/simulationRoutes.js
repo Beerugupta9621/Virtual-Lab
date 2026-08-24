@@ -3,38 +3,11 @@ const express = require("express");
 const Simulation =
     require("../models/Simulation");
 
-const router = express.Router();
+const router =
+    express.Router();
 
 
-// CREATE SIMULATION
-router.post("/", async (req, res) => {
-
-    try {
-
-        const simulation =
-            new Simulation(req.body);
-
-        const savedSimulation =
-            await simulation.save();
-
-        res.status(201).json({
-            success: true,
-            simulation: savedSimulation
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-
-});
-
-
-// GET ALL SIMULATIONS
+// GET all simulations
 router.get("/", async (req, res) => {
 
     try {
@@ -42,26 +15,30 @@ router.get("/", async (req, res) => {
         const simulations =
             await Simulation
                 .find()
-                .sort({ createdAt: -1 });
+                .sort({
+                    createdAt: -1
+                });
 
         res.json({
             success: true,
-            simulations
+            count: simulations.length,
+            simulations: simulations
         });
 
     } catch (error) {
 
+        console.error(error);
+
         res.status(500).json({
             success: false,
-            message: error.message
+            message:
+                "Failed to fetch simulations"
         });
-
     }
-
 });
 
 
-// GET ONE SIMULATION
+// GET simulation by ID
 router.get("/:id", async (req, res) => {
 
     try {
@@ -75,51 +52,143 @@ router.get("/:id", async (req, res) => {
 
             return res.status(404).json({
                 success: false,
-                message: "Simulation not found"
+                message:
+                    "Simulation not found"
             });
-
         }
 
         res.json({
             success: true,
-            simulation
+            simulation: simulation
         });
 
     } catch (error) {
 
         res.status(500).json({
             success: false,
-            message: error.message
+            message:
+                "Failed to fetch simulation"
         });
-
     }
-
 });
 
 
-// DELETE SIMULATION
+// CREATE simulation
+router.post("/", async (req, res) => {
+
+    try {
+
+        const {
+            name,
+            gravity,
+            speed,
+            objectCount,
+            collisionCount,
+            objects
+        } = req.body;
+
+
+        const simulation =
+            new Simulation({
+
+                name:
+                    name ||
+                    "Untitled Simulation",
+
+                gravity:
+                    gravity ?? 9.8,
+
+                speed:
+                    speed ?? 1,
+
+                objectCount:
+                    objectCount ?? 1,
+
+                collisionCount:
+                    collisionCount ?? 0,
+
+                objects:
+                    objects || []
+
+            });
+
+
+        const savedSimulation =
+            await simulation.save();
+
+
+        res.status(201).json({
+
+            success: true,
+
+            message:
+                "Simulation saved successfully",
+
+            simulation:
+                savedSimulation
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message:
+                "Failed to save simulation"
+
+        });
+    }
+});
+
+
+// DELETE simulation
 router.delete("/:id", async (req, res) => {
 
     try {
 
-        await Simulation.findByIdAndDelete(
-            req.params.id
-        );
+        const simulation =
+            await Simulation.findByIdAndDelete(
+                req.params.id
+            );
+
+
+        if (!simulation) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Simulation not found"
+
+            });
+        }
+
 
         res.json({
+
             success: true,
-            message: "Simulation deleted"
+
+            message:
+                "Simulation deleted successfully"
+
         });
 
     } catch (error) {
 
         res.status(500).json({
+
             success: false,
-            message: error.message
+
+            message:
+                "Failed to delete simulation"
+
         });
-
     }
-
 });
 
 

@@ -2,17 +2,14 @@ const mongoose = require("mongoose");
 
 const connectDatabase = async () => {
     try {
-        const connection =
-            await mongoose.connect(
-                process.env.MONGO_URI
-            );
+        const mongoURI =
+            process.env.MONGO_URI ||
+            "mongodb://127.0.0.1:27017/virtual_lab";
 
-        console.log(
-            `✅ MongoDB Connected: ${connection.connection.host}`
-        );
+        await mongoose.connect(mongoURI);
 
+        console.log("✅ MongoDB Connected: 127.0.0.1");
     } catch (error) {
-
         console.error(
             "❌ MongoDB Connection Failed:",
             error.message

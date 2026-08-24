@@ -5,7 +5,8 @@ import ControlPanel from "./components/ControlPanel";
 import SimulationStats from "./components/SimulationStats";
 import PerformanceMonitor from "./components/PerformanceMonitor";
 import ObjectInspector from "./components/ObjectInspector";
-
+import SaveSimulation
+from "./components/SaveSimulation";
 import "./App.css";
 
 function App() {
@@ -153,7 +154,12 @@ function App() {
             <main className="main-content">
 
                 {/* Controls */}
-
+                 <SaveSimulation
+    gravity={gravity}
+    speed={speed}
+    objectCount={objectCount}
+    collisionCount={collisionCount}
+/>
                 <ControlPanel
                     running={running}
                     gravity={gravity}

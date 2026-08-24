@@ -8,6 +8,7 @@ const connectDatabase =
 const simulationRoutes =
     require("./routes/simulationRoutes");
 
+
 const app = express();
 
 const PORT =
@@ -22,13 +23,6 @@ connectDatabase();
 app.use(cors());
 
 app.use(express.json());
-
-
-// Simulation API
-app.use(
-    "/api/simulations",
-    simulationRoutes
-);
 
 
 // Root route
@@ -55,6 +49,13 @@ app.get("/api/health", (req, res) => {
     });
 
 });
+
+
+// Simulation routes
+app.use(
+    "/api/simulations",
+    simulationRoutes
+);
 
 
 // Start server

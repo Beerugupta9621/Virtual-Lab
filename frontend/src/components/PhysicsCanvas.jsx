@@ -15,9 +15,35 @@ function PhysicsCanvas({
     onObjectCountChange,
     onCollisionCountChange,
     onPerformanceUpdate,
-    onObjectSelect
+    onObjectSelect,
+    onObjectsChange
 }) {
+    const getObjectsData = () => {
 
+    if (!engineRef.current) {
+        return [];
+    }
+
+    return engineRef.current.objects.map(
+        (object) => ({
+            x: object.position.x,
+            y: object.position.y,
+
+            velocityX: object.velocity.x,
+            velocityY: object.velocity.y,
+
+            radius: object.radius,
+
+            mass: object.mass,
+
+            restitution:
+                object.restitution,
+
+            friction:
+                object.friction
+        })
+    );
+};
     const canvasRef = useRef(null);
 
     const engineRef = useRef(null);

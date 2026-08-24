@@ -1,7 +1,7 @@
 {
   "name": "virtual-lab-backend",
   "version": "1.0.0",
-  "description": "Backend API for Virtual Lab physics simulation",
+  "description": "Backend for Virtual Lab Physics Simulation Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,17 +10,16 @@
   "keywords": [
     "virtual-lab",
     "physics",
-    "simulation",
-    "express"
+    "simulation"
   ],
   "author": "Beeru Gupta",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongoose": "^9.9.3"
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
